@@ -1,0 +1,154 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the Passenger struct
+typedef struct Passenger {
+    int passenger_id;
+    struct Passenger* next;
+} Passenger;
+
+// Define the Flight struct
+typedef struct Flight {
+    int flight_id;
+    struct Flight* next;
+} Flight;
+
+// Function to delete a passenger by passenger_id
+void deletePassenger(Passenger** head, int passenger_id) {
+    Passenger* temp = *head;
+    Passenger* prev = NULL;
+
+    // If the head node itself holds the passenger to be deleted
+    if (temp != NULL && temp->passenger_id == passenger_id) {
+        *head = temp->next;  // Change head
+        free(temp);          // Free old head
+        printf("Passenger deleted successfully.\n");
+        return;
+    }
+
+    // Search for the passenger to be deleted
+    while (temp != NULL && temp->passenger_id != passenger_id) {
+        prev = temp;
+        temp = temp->next;
+    }
+
+    // If passenger was not found
+    if (temp == NULL) {
+        printf("Passenger not found.\n");
+        return;
+    }
+
+    // Unlink the node from the linked list
+    prev->next = temp->next;
+
+    // Free memory
+    free(temp);
+    printf("Passenger deleted successfully.\n");
+}
+
+// Function to count the total number of flights
+int countFlights(Flight* head) {
+    int count = 0;
+    Flight* temp = head;
+    while (temp != NULL) {
+        count++;
+        temp = temp->next;
+    }
+    return count;
+}
+
+// Function to count the total number of passengers
+int countPassengers(Passenger* head) {
+    int count = 0;
+    Passenger* temp = head;
+    while (temp != NULL) {
+        count++;
+        temp = temp->next;
+    }
+    return count;
+}
+
+// Helper function to create a new passenger node
+Passenger* createPassenger(int passenger_id) {
+    Passenger* new_passenger = (Passenger*)malloc(sizeof(Passenger));
+    new_passenger->passenger_id = passenger_id;
+    new_passenger->next = NULL;
+    return new_passenger;
+}
+
+// Helper function to create a new flight node
+Flight* createFlight(int flight_id) {
+    Flight* new_flight = (Flight*)malloc(sizeof(Flight));
+    new_flight->flight_id = flight_id;
+    new_flight->next = NULL;
+    return new_flight;
+}
+
+int main() {
+    Passenger* passenger_list = NULL;  // Initialize empty passenger list
+    Flight* flight_list = NULL;  // Initialize empty flight list
+
+    int choice, id, flight_id;
+    while (1) {
+        printf("\n1. Add Passenger\n2. Delete Passenger\n3. Count Passengers\n4. Add Flight\n5. Count Flights\n6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                // Add a passenger
+                printf("Enter passenger ID to add: ");
+                scanf("%d", &id);
+                if (passenger_list == NULL) {
+                    passenger_list = createPassenger(id);  // Create the first passenger
+                } else {
+                    Passenger* new_passenger = createPassenger(id);
+                    new_passenger->next = passenger_list;
+                    passenger_list = new_passenger;  // Add to the beginning of the list
+                }
+                printf("Passenger with ID %d added.\n", id);
+                break;
+
+            case 2:
+                // Delete a passenger
+                printf("Enter passenger ID to delete: ");
+                scanf("%d", &id);
+                deletePassenger(&passenger_list, id);
+                break;
+
+            case 3:
+                // Count passengers
+                printf("Total passengers: %d\n", countPassengers(passenger_list));
+                break;
+
+            case 4:
+                // Add a flight
+                printf("Enter flight ID to add: ");
+                scanf("%d", &flight_id);
+                if (flight_list == NULL) {
+                    flight_list = createFlight(flight_id);  // Create the first flight
+                } else {
+                    Flight* new_flight = createFlight(flight_id);
+                    new_flight->next = flight_list;
+                    flight_list = new_flight;  // Add to the beginning of the list
+                }
+                printf("Flight with ID %d added.\n", flight_id);
+                break;
+
+            case 5:
+                // Count flights
+                printf("Total flights: %d\n", countFlights(flight_list));
+                break;
+
+            case 6:
+                // Exit
+                printf("Exiting...\n");
+                return 0;
+
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
